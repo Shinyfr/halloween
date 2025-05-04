@@ -1,34 +1,102 @@
 {
   "start": {
-    "text": "La nuit d’Halloween tombe sur Ravenwood… Que faites-vous ?",
+    "text": "La nuit d’Halloween tombe sur Ravenwood. Les lanternes vacillent et un silence oppressant s'installe.\n\nVous êtes à l'orée du village. Que faites-vous ?",
     "options": [
-      { "label": "Visiter la vieille maison",   "next": "house",    "delayDays": 0 },
-      { "label": "Suivre le sentier sombre",    "next": "trail",    "delayDays": 0 }
+      { "label": "Explorer la maison abandonnée", "next": "house" },
+      { "label": "Pénétrer dans le cimetière",   "next": "cemetery" }
     ]
   },
+
   "house": {
-    "text": "L’escalier craque sous tes pas…",
+    "text": "La porte grinçante s’ouvre sur un hall poussiéreux. Deux chemins s’offrent à vous : un escalier en colimaçon vers le grenier ou un passage sombre vers le sous-sol.",
     "options": [
-      { "label": "Descendre au sous-sol",       "next": "basement", "delayDays": 1 },
-      { "label": "Faire demi-tour",             "next": "start",    "delayDays": 0 }
+      { "label": "Monter au grenier",   "next": "attic"   },
+      { "label": "Descendre au sous-sol","next": "basement"}
     ]
   },
-  "trail": {
-    "text": "Le vent glacial te pousse en avant…",
+  "attic": {
+    "text": "Le grenier est empli de toiles d’araignées et d’objets brisés. Une vieille poupée, posée sur un coffre, paraît vous observer.",
     "options": [
-      { "label": "Courir vers la lumière",      "next": "village",  "delayDays": 1 },
-      { "label": "Regarder derrière soi",       "next": "shadow",   "delayDays": 0 }
+      { "label": "Parler à la poupée",           "next": "doll"   },
+      { "label": "Chercher un indice autour du coffre", "next": "coffer" }
     ]
   },
   "basement": {
-    "text": "Une silhouette encapuchonnée se retourne…",
+    "text": "Un escalier étroit vous mène dans un sous-sol glacial. Un coffre ancien trône au centre de la pièce, fermé par un cadenas rouillé.",
     "options": [
-      { "label": "Tenter de parler",            "next": "talk",     "delayDays": 2 },
-      { "label": "Fuir à toutes jambes",        "next": "escape",   "delayDays": 0 }
+      { "label": "Ouvrir le coffre poussiéreux", "next": "treasure" },
+      { "label": "Suivre un bruit étrange",      "next": "shadow"   }
     ]
   },
-  "village":  { "text": "Le village est désert…",       "options": [] },
-  "shadow":   { "text": "Rien qu’une ombre…",            "options": [] },
-  "talk":     { "text": "Un ermite bienveillant t’offre un bonbon.", "options": [] },
-  "escape":   { "text": "Tu t’enfuis sain et sauf… pour l’instant.",   "options": [] }
+  "doll": {
+    "text": "La poupée s’anime ! Elle prononce d’une voix sifflante : « Suis-moi si tu veux vivre… »\n\nPuis elle s’écarte, un passage secret apparaît.",
+    "options": [
+      { "label": "Suivre le passage", "next": "secret" }
+    ]
+  },
+  "coffer": {
+    "text": "Le coffre craque. À l’intérieur, un vieux grimoire s’ouvre tout seul sur une page gravée de symboles rouges…\n\nUn éclair de lumière jaillit !",
+    "options": []
+  },
+  "treasure": {
+    "text": "Vous soulevez le couvercle et découvrez un collier orné d’une citrouille en rubis. Vous sentez un pouvoir étrange vous envahir…",
+    "options": []
+  },
+  "shadow": {
+    "text": "Vous avancez vers le bruit et une ombre surgit derrière vous. Tout devient noir.",
+    "options": []
+  },
+  "secret": {
+    "text": "Le tunnel vous mène à une bibliothèque cachée. Vous y trouvez des récits oubliés d’Halloween…\n\nVotre aventure ne fait que commencer.",
+    "options": []
+  },
+
+  "cemetery": {
+    "text": "Le cimetière baigne dans une brume dense. Deux allées se présentent : l’une bordée de statues, l’autre éclairée par une lanterne vacillante.",
+    "options": [
+      { "label": "Suivre la rangée de statues",   "next": "statues"  },
+      { "label": "Marcher vers la lanterne",      "next": "lantern"  }
+    ]
+  },
+  "statues": {
+    "text": "Les statues vous entourent sans un bruit. Vous remarquez une dalle de pierre légèrement enfoncée.",
+    "options": [
+      { "label": "Soulever la dalle",   "next": "crypt"    },
+      { "label": "Continuer tout droit", "next": "path_end" }
+    ]
+  },
+  "lantern": {
+    "text": "La lanterne s’éteint soudain. Vous entendez un murmure près d’une tombe sculptée.",
+    "options": [
+      { "label": "Lire l’épitaphe", "next": "inscription" },
+      { "label": "Toucher la tombe", "next": "curse"        }
+    ]
+  },
+  "crypt": {
+    "text": "Un escalier taillé dans la pierre descend vers un mausolée où reposent d’anciens seigneurs du village.",
+    "options": [
+      { "label": "Réciter une incantation à voix basse", "next": "incantation" },
+      { "label": "Fouiller un sarcophage",              "next": "mummy"       }
+    ]
+  },
+  "path_end": {
+    "text": "Vous atteignez la sortie du cimetière. L’air frais vous saisit. Vous avez survécu… pour l’instant.",
+    "options": []
+  },
+  "inscription": {
+    "text": "« Celui qui dérange le repos des morts… »\n\nUne silhouette spectrale se dresse devant vous.",
+    "options": []
+  },
+  "curse": {
+    "text": "Un vent glacial vous traverse. Vous sentez vos forces vous quitter…",
+    "options": []
+  },
+  "incantation": {
+    "text": "Les hiéroglyphes s’illuminent. Un ancien roi s’éveille et vous accorde son savoir.",
+    "options": []
+  },
+  "mummy": {
+    "text": "La momie se redresse, ses bandelettes tombent. Elle vous offre un talisman protecteur.",
+    "options": []
+  }
 }
