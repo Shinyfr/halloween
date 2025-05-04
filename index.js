@@ -24,18 +24,17 @@ client.once('ready', () => {
 });
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-  const command = client.commands.get(interaction.commandName);
-  if (!command) return;
-  try {
-    await command.execute(interaction);
-  } catch (err) {
-    console.error(err);
-    if (interaction.replied||interaction.deferred) 
-      await interaction.followUp({ content: 'Erreur.', ephemeral: true });
-    else
-      await interaction.reply({ content: 'Erreur.', ephemeral: true });
-  }
+  if (!interaction.isStringSelectMenu()) return;
+  if (interaction.customId !== 'shop_select') return;
+
+  const chosenId = interaction.values[0];
+  // On délègue au code de /buy
+  const buyCommand = client.commands.get('buy');
+  // On simule une option pour buy
+  interaction.options = {
+    getString: () => chosenId
+  };
+  return buyCommand.execute(interaction);
 });
 
 (async () => {
