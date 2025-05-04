@@ -1,4 +1,3 @@
-// commands/top.js
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder }        = require('discord.js');
 
@@ -8,9 +7,7 @@ module.exports = {
     .setDescription('Affiche le classement des meilleurs bonbons'),
   async execute(interaction) {
     const db = interaction.client.db;
-    // Récupère toutes les clés du storage
     const keys = await db.keys();
-    // Filtre celles qui correspondent aux soldes
     const balanceKeys = keys.filter(k => k.endsWith('_balance'));
 
     // Construit un tableau { uid, bal }

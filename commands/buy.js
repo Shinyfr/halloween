@@ -1,4 +1,3 @@
-// commands/buy.js
 const { SlashCommandBuilder }             = require('@discordjs/builders');
 const { EmbedBuilder }                    = require('discord.js');
 const shop = require('../shop.json');

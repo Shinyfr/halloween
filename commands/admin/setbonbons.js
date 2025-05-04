@@ -1,4 +1,3 @@
-// commands/admin/setbonbons.js
 const { SlashCommandBuilder }      = require('@discordjs/builders');
 const { EmbedBuilder,
         PermissionsBitField }      = require('discord.js');

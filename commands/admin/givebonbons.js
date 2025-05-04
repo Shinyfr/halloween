@@ -1,4 +1,3 @@
-// commands/admin/givebonbons.js
 const { SlashCommandBuilder }      = require('@discordjs/builders');
 const { EmbedBuilder,
         PermissionsBitField }      = require('discord.js');
@@ -7,7 +6,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('givebonbons')
     .setDescription('Donne des bonbons 🍬 à un utilisateur')
-    // tu peux laisser le defaultMemberPermissions en plus, mais il sera doublé par notre check
     .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator)
     .addUserOption(opt => opt.setName('user').setDescription('Cible').setRequired(true))
     .addIntegerOption(opt => opt.setName('amount').setDescription('Quantité').setRequired(true)),
@@ -26,7 +24,6 @@ module.exports = {
       });
     }
 
-    // …le reste de ton code pour donner des bonbons
     const db     = interaction.client.db;
     const user   = interaction.options.getUser('user');
     const amount = interaction.options.getInteger('amount');

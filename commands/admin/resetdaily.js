@@ -1,4 +1,3 @@
-// commands/admin/resetdaily.js
 const { SlashCommandBuilder }      = require('@discordjs/builders');
 const { EmbedBuilder,
         PermissionsBitField }      = require('discord.js');

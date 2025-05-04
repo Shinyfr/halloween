@@ -1,4 +1,3 @@
-// commands/inventory.js
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder }        = require('discord.js');
 const shop                   = require('../shop.json');
@@ -11,7 +10,7 @@ module.exports = {
     const db  = interaction.client.db;
     const uid = interaction.user.id;
 
-    // Récupère l'inventaire (tableau d'IDs)
+    // Récupère l'inventaire
     const inv = await db.get(`${uid}_inv`) || [];
 
     if (inv.length === 0) {

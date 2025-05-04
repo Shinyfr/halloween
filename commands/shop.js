@@ -1,4 +1,3 @@
-// commands/shop.js
 const { SlashCommandBuilder }             = require('@discordjs/builders');
 const { EmbedBuilder, ActionRowBuilder,
         StringSelectMenuBuilder }         = require('discord.js');

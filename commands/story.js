@@ -1,4 +1,3 @@
-// commands/story.js
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
   EmbedBuilder,
