@@ -34,8 +34,8 @@ module.exports = {
     // Envoie une réponse éphémère avec le bouton
     return interaction.reply({
       content: next
-        ? '🔔 Notifications activées ! Tu seras prévenu·e à 9h quand un nouveau chapitre arrive.'
-        : '🔕 Notifications désactivées ! Tu ne seras plus notifié·e.',
+        ? '🔔 Notifications activées ! Tu seras prévenu(e) à 9h quand un nouveau chapitre arrive.'
+        : '🔕 Notifications désactivées ! Tu ne seras plus notifié(e).',
       components: [row],
       ephemeral: true
     });
