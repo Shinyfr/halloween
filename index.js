@@ -2,7 +2,6 @@
 require('dotenv').config();
 console.log('[DEBUG] STORY_TEST_MODE =', process.env.STORY_TEST_MODE);
 
-
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs    = require('fs');
 const path  = require('path');
@@ -10,15 +9,15 @@ const db    = require('./db');
 const cron  = require('node-cron');
 
 async function main() {
-  // 1️⃣ Init stockage
+  // 1️⃣ Initialise le stockage
   await db.init();
 
-  // 2️⃣ Crée le client
+  // 2️⃣ Crée le client Discord
   const client = new Client({
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMessages,
-      // GatewayIntentBits.MessageContent,
+      // GatewayIntentBits.MessageContent, // décommente si besoin
     ]
   });
   client.db = db;
@@ -36,7 +35,7 @@ async function main() {
     }
   })(path.join(__dirname, 'commands'));
 
-  // 4️⃣ Ready + notif cron (inchangé)
+  // 4️⃣ Ready + notifications journalières
   client.once('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag} !`);
     cron.schedule('0 9 * * *', async () => {
@@ -52,7 +51,7 @@ async function main() {
             );
             await db.set(key, { current: st.current, nextAvailableAt: 0 });
           } catch (e) {
-            console.error(`Erreur notif ${uid}:`, e);
+            console.error(`Erreur de notification (${uid}):`, e);
           }
         }
       }
@@ -61,15 +60,15 @@ async function main() {
 
   // 5️⃣ Gestion des interactions
   client.on('interactionCreate', async interaction => {
-    // —— Story buttons
+    // —— Story buttons (avec override test mode)
     if (interaction.isButton() && interaction.customId.startsWith('story_')) {
-      const uid       = interaction.user.id;
-      const key       = `${uid}_storyState`;
+      const uid    = interaction.user.id;
+      const stateKey = `${uid}_storyState`;
       const storyData = require('./story.json');
 
-      // Recommencer
+      // « Recommencer »
       if (interaction.customId === 'story_restart') {
-        await db.set(key, { current: 'start', nextAvailableAt: 0 });
+        await db.set(stateKey, { current: 'start', nextAvailableAt: 0 });
         return client.commands.get('story').execute(interaction);
       }
 
@@ -78,13 +77,17 @@ async function main() {
       const idx    = parseInt(idxStr, 10);
       const opt    = storyData[current].options[idx];
       const next   = opt.next;
-      // si mode test, on force zéro délai
+      const rawDelay = opt.delayDays || 0;
       const isTest = process.env.STORY_TEST_MODE === 'true';
-      const days   = isTest ? 0 : (opt.delayDays || 0);
-      const now    = Date.now();
-      const nextAt = now + days * 24 * 3600 * 1000;
+      const days   = isTest ? 0 : rawDelay;
+      const nextAt = Date.now() + days * 24 * 3600 * 1000;
 
-      await db.set(key, { current: next, nextAvailableAt: nextAt });
+      console.log(
+        `[DEBUG] story: current=${current}, rawDelay=${rawDelay}, ` +
+        `isTest=${isTest}, effectiveDelay=${days}`
+      );
+
+      await db.set(stateKey, { current: next, nextAvailableAt: nextAt });
 
       if (days > 0) {
         const when = new Date(nextAt).toLocaleString('fr-FR', {
@@ -98,20 +101,22 @@ async function main() {
         });
       }
 
-      // immédiat
+      // délai 0 → on affiche immédiatement
       return client.commands.get('story').execute(interaction);
     }
 
-    // —— Shop select
+    // —— Menu déroulant (/shop)
     if (interaction.isStringSelectMenu() && interaction.customId === 'shop_select') {
       interaction.options = { getString: () => interaction.values[0] };
       return client.commands.get('buy').execute(interaction);
     }
 
-    // —— Slash commands
+    // —— Slash-commands
     if (!interaction.isCommand()) return;
+    console.log(`>> Reçu interaction : ${interaction.commandName}`);
     const cmd = client.commands.get(interaction.commandName);
     if (!cmd) return;
+
     try {
       await cmd.execute(interaction);
     } catch (err) {
@@ -122,11 +127,11 @@ async function main() {
     }
   });
 
-  // 6️⃣ Login
+  // 6️⃣ Connexion du bot
   await client.login(process.env.DISCORD_TOKEN);
 }
 
 main().catch(err => {
-  console.error('Erreur démarrage:', err);
+  console.error('❌ Erreur au démarrage :', err);
   process.exit(1);
 });
