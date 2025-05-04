@@ -14,8 +14,7 @@ module.exports = {
 
     if (last === today) {
       return interaction.reply({
-        content: `⏳ Tu as déjà réclamé ton daily aujourd’hui.`,
-        ephemeral: true
+        content: `⏳ Tu as déjà réclamé ton daily aujourd’hui.`
       });
     }
 
