@@ -2,26 +2,28 @@
 require('dotenv').config();
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const fs   = require('fs');
+const fs = require('fs');
 const path = require('path');
-const db   = require('./db');
+const db = require('./db');
 
 async function main() {
-  // Initialise le stockage
+  // 1️⃣ Initialise le stockage
   await db.init();
 
-  // Crée le client Discord
+  // 2️⃣ Crée le client Discord
   const client = new Client({
     intents: [
       GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages
-      // GatewayIntentBits.MessageContent, // si besoin
+      GatewayIntentBits.GuildMessages,
+      // GatewayIntentBits.MessageContent, // décommente si besoin de lire le contenu des messages
     ]
   });
+
+  // Expose la DB et prépare la collection de commandes
   client.db = db;
   client.commands = new Collection();
 
-  // Chargement récursif des commandes
+  // 3️⃣ Chargement récursif des commandes depuis commands/ et sous-dossiers
   function loadCommandFiles(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
@@ -36,28 +38,48 @@ async function main() {
   }
   loadCommandFiles(path.join(__dirname, 'commands'));
 
-  // Ready
+  // 4️⃣ Événement ready
   client.once('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag} !`);
   });
 
-  // Interaction handler (menu + commands)
+  // 5️⃣ Gestion des interactions (boutons + sélecteurs + slash-commands)
   client.on('interactionCreate', async interaction => {
-    // Menu déroulant shop
+    // ── Boutons de l’aventure (/story)
+    if (interaction.isButton() && interaction.customId.startsWith('story_')) {
+      const uid = interaction.user.id;
+      let nextNode;
+      if (interaction.customId === 'story_restart') {
+        nextNode = 'start';
+      } else {
+        const [, current, idxStr] = interaction.customId.split('_');
+        const idx = parseInt(idxStr, 10);
+        const node = require('./story.json')[current];
+        nextNode = node.options[idx].next;
+      }
+      await db.set(`${uid}_story`, nextNode);
+      // Réexécute la commande story pour afficher le nouveau nœud
+      const storyCmd = client.commands.get('story');
+      return storyCmd.execute(interaction);
+    }
+
+    // ── Menu déroulant de la boutique (/shop)
     if (interaction.isStringSelectMenu() && interaction.customId === 'shop_select') {
       const choice = interaction.values[0];
-      const buyCmd = client.commands.get('buy');
+      // Simule l’option pour la commande /buy
       interaction.options = { getString: () => choice };
+      const buyCmd = client.commands.get('buy');
       return buyCmd.execute(interaction);
     }
 
+    // ── Slash-commands
     if (!interaction.isCommand()) return;
     console.log(`>> Reçu interaction : ${interaction.commandName}`);
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
+    const cmd = client.commands.get(interaction.commandName);
+    if (!cmd) return;
 
     try {
-      await command.execute(interaction);
+      await cmd.execute(interaction);
     } catch (err) {
       console.error(err);
       const payload = { content: '❌ Une erreur est survenue.', ephemeral: true };
@@ -69,7 +91,7 @@ async function main() {
     }
   });
 
-  // Login
+  // 6️⃣ Connexion du bot
   await client.login(process.env.DISCORD_TOKEN);
 }
 
