@@ -36,6 +36,6 @@ module.exports = {
       )
       .setFooter({ text: `Reviens demain pour un nouveau bonus` });
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed] });
   }
 };
