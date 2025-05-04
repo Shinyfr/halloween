@@ -17,14 +17,14 @@ module.exports = {
     const db  = interaction.client.db;
     const uid = interaction.user.id;
 
-    // 📦 récupère ou initialise l'état
+    // Récupère ou initialise l’état
     let state = await db.get(`${uid}_storyState`);
     if (!state) {
       state = { current: 'start', nextAvailableAt: 0 };
       await db.set(`${uid}_storyState`, state);
     }
 
-    // ⏳ cooldown (si delayDays > 0 en mode réel)
+    // Cooldown si applicable
     if (Date.now() < state.nextAvailableAt) {
       const when = new Date(state.nextAvailableAt).toLocaleString('fr-FR', {
         dateStyle: 'full', timeStyle: 'short', timeZone: 'Europe/Paris'
@@ -35,25 +35,35 @@ module.exports = {
       });
     }
 
-    // 📖 on charge la scène
+    // Charge le noeud courant
     const node = storyData[state.current];
     const embed = new EmbedBuilder()
       .setTitle(node.ending === 'death' ? '💀 RIP, tu es mort !' : '🕯️ Aventure Halloween')
       .setColor(node.ending === 'death' ? '#8B0000' : '#008000')
       .setDescription(node.text);
 
-    // 📎 prépare l’image s’il y en a
-    const attachments = [];
-    if (node.image) {
-      // chemin local : assets/story/tonImage.png
-      const fullPath = path.join(__dirname, '..', node.image);
-      const filename = path.basename(node.image);
-      // attache et pointe l’embed dessus
-      attachments.push({ attachment: fullPath, name: filename });
-      embed.setImage(`attachment://${filename}`);
+    // Si succès et reward, ajoute champ récompense
+    if (node.ending === 'success' && node.reward) {
+      const oldBal = await db.get(`${uid}_balance`) || 0;
+      const newBal = oldBal + node.reward;
+      await db.set(`${uid}_balance`, newBal);
+      embed.addFields({
+        name: '🎉 Récompense',
+        value: `+${node.reward} bonbon${node.reward>1?'s':''}\n**Solde** : ${newBal} 🍬`
+      });
+      embed.setFooter({ text: 'Bravo, tu as réussi !' });
     }
 
-    // 🔘 boutons
+    // Prépare l’image si définie
+    const files = [];
+    if (node.image) {
+      const fullPath = path.join(__dirname, '..', node.image);
+      const filename = path.basename(node.image);
+      embed.setImage(`attachment://${filename}`);
+      files.push({ attachment: fullPath, name: filename });
+    }
+
+    // Construit les boutons
     const row = new ActionRowBuilder();
     if (node.options.length > 0) {
       node.options.forEach((opt, idx) => {
@@ -65,7 +75,7 @@ module.exports = {
         );
       });
     } else {
-      // 📈 gestion des fins (reward / ending déjà dans l’embed si besoin)
+      // Fin de partie : bouton recommencer
       row.addComponents(
         new ButtonBuilder()
           .setCustomId('story_restart')
@@ -74,11 +84,10 @@ module.exports = {
       );
     }
 
-    // 🚀 envoie la réponse avec fichiers
     const payload = {
       embeds: [embed],
       components: [row],
-      files: attachments,
+      files,
       ephemeral: true
     };
 
