@@ -18,7 +18,6 @@ module.exports = {
 
     // Vérification des permissions
     if (
-      !member.permissions.has(PermissionsBitField.Flags.Administrator) &&
       !member.roles.cache.has(adminRole)
     ) {
       return interaction.reply({

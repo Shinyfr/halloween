@@ -13,7 +13,6 @@ module.exports = {
     const adminRole = process.env.ADMIN_ROLE_ID;
     const member    = interaction.member;
     if (
-    !member.permissions.has(PermissionsBitField.Flags.Administrator) &&
     !member.roles.cache.has(adminRole)
     ) {
     return interaction.reply({
