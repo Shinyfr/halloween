@@ -6,7 +6,6 @@ const path = require('path');
 const db   = require('./db');
 
 async function main() {
-  // 1️⃣ Initialise la base (node-persist)
   await db.init();
 
   // 2️⃣ Crée le client Discord
@@ -14,15 +13,12 @@ async function main() {
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMessages,
-      // si besoin de lire le contenu des messages :
-      // GatewayIntentBits.MessageContent,
     ]
   });
 
   // Expose la db sur le client
   client.db = db;
 
-  // 3️⃣ Charge tes commandes dans une collection
   client.commands = new Collection();
   const commandsPath = path.join(__dirname, 'commands');
   for (const file of fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'))) {
@@ -30,13 +26,13 @@ async function main() {
     client.commands.set(cmd.data.name, cmd);
   }
 
-  // 4️⃣ Handlers d’événements
+  // Handlers d’événements
   client.once('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag} !`);
   });
 
   client.on('interactionCreate', async interaction => {
-    // → Menu déroulant de la boutique
+    // Menu déroulant de la boutique
     if (interaction.isStringSelectMenu() && interaction.customId === 'shop_select') {
       const choice = interaction.values[0];
       const buyCmd = client.commands.get('buy');
@@ -45,7 +41,7 @@ async function main() {
       return buyCmd.execute(interaction);
     }
 
-    // → Slash-commands
+    // Slash-commands
     if (!interaction.isCommand()) return;
     console.log(`>> Reçu interaction : ${interaction.commandName}`);
 
@@ -65,7 +61,7 @@ async function main() {
     }
   });
 
-  // 5️⃣ Connexion
+  // Connexion
   await client.login(process.env.DISCORD_TOKEN);
 }
 

@@ -34,7 +34,7 @@ module.exports = {
         `Tu as gagné **${gain}** bonbon${gain>1?'s':''} 🍬\n\n` +
         `**Total** : ${newBalance} 🍬`
       )
-      .setFooter({ text: `Reviens demain à minuit pour un nouveau bonus` });
+      .setFooter({ text: `Reviens demain pour un nouveau bonus` });
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
   }
