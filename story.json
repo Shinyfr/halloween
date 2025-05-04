@@ -35,7 +35,8 @@
     "text": "La poupée s’anime ! Elle prononce d’une voix sifflante : « Suis-moi si tu veux vivre… »\n\nPuis elle s’écarte, un passage secret apparaît.",
     "options": [
       { "label": "Suivre le passage", "next": "secret" }
-    ]
+    ],
+    "image": "assets/story/secret.png"
   },
 
   "coffer": {
@@ -58,7 +59,6 @@
   "secret": {
     "text": "Le tunnel vous mène à une bibliothèque cachée. Vous y trouvez des récits oubliés d’Halloween…\n\nVotre aventure ne fait que commencer.",
     "options": [],
-    "image": "assets/story/secret.png",
     "ending": "success",
     "reward": 10
   },
