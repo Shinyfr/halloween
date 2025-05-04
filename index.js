@@ -1,5 +1,10 @@
 require('dotenv').config();
 
+client.on('interactionCreate', interaction => {
+  console.log('>> Reçu interaction :', interaction.commandName || interaction.type);
+});
+
+
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs   = require('fs');
 const path = require('path');
