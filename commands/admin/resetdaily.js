@@ -1,0 +1,24 @@
+// commands/admin/resetdaily.js
+const { SlashCommandBuilder }      = require('@discordjs/builders');
+const { EmbedBuilder,
+        PermissionsBitField }      = require('discord.js');
+
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('resetdaily')
+    .setDescription("Réinitialise le daily d’un utilisateur")
+    .setDefaultMemberPermissions(PermissionsBitField.Flags.Administrator)
+    .addUserOption(opt => opt.setName('user').setDescription('Cible').setRequired(true)),
+  async execute(interaction) {
+    const db   = interaction.client.db;
+    const user = interaction.options.getUser('user');
+    const uid  = user.id;
+    await db.set(`${uid}_lastDaily`, null);
+
+    const embed = new EmbedBuilder()
+      .setTitle('🔄 Daily réinitialisé')
+      .setColor('#FFA500')
+      .setDescription(`<@${uid}> peut réclamer à nouveau.`);
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+  }
+};

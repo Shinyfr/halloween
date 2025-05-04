@@ -1,3 +1,4 @@
+// index.js
 require('dotenv').config();
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
@@ -6,45 +7,52 @@ const path = require('path');
 const db   = require('./db');
 
 async function main() {
+  // Initialise le stockage
   await db.init();
 
-  // 2️⃣ Crée le client Discord
+  // Crée le client Discord
   const client = new Client({
     intents: [
       GatewayIntentBits.Guilds,
-      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.GuildMessages
+      // GatewayIntentBits.MessageContent, // si besoin
     ]
   });
-
-  // Expose la db sur le client
   client.db = db;
-
   client.commands = new Collection();
-  const commandsPath = path.join(__dirname, 'commands');
-  for (const file of fs.readdirSync(commandsPath).filter(f => f.endsWith('.js'))) {
-    const cmd = require(`./commands/${file}`);
-    client.commands.set(cmd.data.name, cmd);
-  }
 
-  // Handlers d’événements
+  // Chargement récursif des commandes
+  function loadCommandFiles(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        loadCommandFiles(fullPath);
+      } else if (entry.isFile() && entry.name.endsWith('.js')) {
+        const command = require(fullPath);
+        client.commands.set(command.data.name, command);
+      }
+    }
+  }
+  loadCommandFiles(path.join(__dirname, 'commands'));
+
+  // Ready
   client.once('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag} !`);
   });
 
+  // Interaction handler (menu + commands)
   client.on('interactionCreate', async interaction => {
-    // Menu déroulant de la boutique
+    // Menu déroulant shop
     if (interaction.isStringSelectMenu() && interaction.customId === 'shop_select') {
       const choice = interaction.values[0];
       const buyCmd = client.commands.get('buy');
-      // Simule l'option pour /buy
       interaction.options = { getString: () => choice };
       return buyCmd.execute(interaction);
     }
 
-    // Slash-commands
     if (!interaction.isCommand()) return;
     console.log(`>> Reçu interaction : ${interaction.commandName}`);
-
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
 
@@ -52,20 +60,19 @@ async function main() {
       await command.execute(interaction);
     } catch (err) {
       console.error(err);
-      const replyPayload = { content: '❌ Une erreur est survenue.', ephemeral: true };
+      const payload = { content: '❌ Une erreur est survenue.', ephemeral: true };
       if (interaction.replied || interaction.deferred) {
-        await interaction.followUp(replyPayload);
+        await interaction.followUp(payload);
       } else {
-        await interaction.reply(replyPayload);
+        await interaction.reply(payload);
       }
     }
   });
 
-  // Connexion
+  // Login
   await client.login(process.env.DISCORD_TOKEN);
 }
 
-// Démarrage
 main().catch(err => {
   console.error('Erreur au démarrage :', err);
   process.exit(1);
