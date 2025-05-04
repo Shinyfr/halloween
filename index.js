@@ -1,6 +1,9 @@
 // index.js
 require('dotenv').config();
 
+console.log('[DEBUG] ADMIN_ROLE_ID=', process.env.ADMIN_ROLE_ID);
+
+
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs   = require('fs');
 const path = require('path');
