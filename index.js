@@ -139,7 +139,7 @@ async function main() {
           timeZone: 'Europe/Paris'
         });
         return interaction.reply({
-          content: `⏳ Ton choix est pris en compte !\nReviens le **${when}** pour la suite.`,
+          content: `⏳ Ton choix est pris en compte !\nReviens demain pour la suite.`,
           ephemeral: true
         });
       }
