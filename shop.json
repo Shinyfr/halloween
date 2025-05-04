@@ -1,0 +1,6 @@
+[
+    { "id": "potion",   "name": "Potion mystérieuse", "price": 10, "desc": "Donne un bonus de courage." },
+    { "id": "chapeau",  "name": "Chapeau de sorcière", "price": 15, "desc": "Améliore le style effrayant." },
+    { "id": "candied",  "name": "Bonbon doré",       "price": 25, "desc": "Réclame un cadeau spécial." }
+  ]
+  
