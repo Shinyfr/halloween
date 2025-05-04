@@ -6,6 +6,7 @@ const {
   ButtonBuilder,
   ButtonStyle
 } = require('discord.js');
+const path      = require('path');
 const storyData = require('../story.json');
 
 module.exports = {
@@ -16,14 +17,14 @@ module.exports = {
     const db  = interaction.client.db;
     const uid = interaction.user.id;
 
-    // Récupère ou initialise l'état
+    // 📦 récupère ou initialise l'état
     let state = await db.get(`${uid}_storyState`);
     if (!state) {
       state = { current: 'start', nextAvailableAt: 0 };
       await db.set(`${uid}_storyState`, state);
     }
 
-    // Si on est en cooldown (mode jours réels)
+    // ⏳ cooldown (si delayDays > 0 en mode réel)
     if (Date.now() < state.nextAvailableAt) {
       const when = new Date(state.nextAvailableAt).toLocaleString('fr-FR', {
         dateStyle: 'full', timeStyle: 'short', timeZone: 'Europe/Paris'
@@ -34,43 +35,37 @@ module.exports = {
       });
     }
 
-    // Génère l'embed pour le noeud courant
+    // 📖 on charge la scène
     const node = storyData[state.current];
     const embed = new EmbedBuilder()
-      .setTitle('🕯️ Aventure Halloween')
+      .setTitle(node.ending === 'death' ? '💀 RIP, tu es mort !' : '🕯️ Aventure Halloween')
       .setColor(node.ending === 'death' ? '#8B0000' : '#008000')
       .setDescription(node.text);
 
-    // Construction des boutons
+    // 📎 prépare l’image s’il y en a
+    const attachments = [];
+    if (node.image) {
+      // chemin local : assets/story/tonImage.png
+      const fullPath = path.join(__dirname, '..', node.image);
+      const filename = path.basename(node.image);
+      // attache et pointe l’embed dessus
+      attachments.push({ attachment: fullPath, name: filename });
+      embed.setImage(`attachment://${filename}`);
+    }
+
+    // 🔘 boutons
     const row = new ActionRowBuilder();
     if (node.options.length > 0) {
-      for (let i = 0; i < node.options.length; i++) {
-        const opt = node.options[i];
+      node.options.forEach((opt, idx) => {
         row.addComponents(
           new ButtonBuilder()
-            .setCustomId(`story_${state.current}_${i}`)
+            .setCustomId(`story_${state.current}_${idx}`)
             .setLabel(opt.label)
             .setStyle(ButtonStyle.Primary)
         );
-      }
+      });
     } else {
-      // Noeud final → gestion de l'ending
-      if (node.ending === 'death') {
-        embed.setTitle('💀 RIP, tu es mort !');
-      } else if (node.ending === 'success' && node.reward) {
-        // Attribution de la récompense
-        const oldBal = await db.get(`${uid}_balance`) || 0;
-        const newBal = oldBal + node.reward;
-        await db.set(`${uid}_balance`, newBal);
-        embed.addFields({
-          name: '🎉 Récompense',
-          value: `+${node.reward} bonbon${node.reward>1?'s':''}\n` +
-                 `**Nouveau solde** : ${newBal} 🍬`
-        });
-        embed.setFooter({ text: 'Bravo, tu as réussi !' });
-      }
-
-      // Bouton « Recommencer »
+      // 📈 gestion des fins (reward / ending déjà dans l’embed si besoin)
       row.addComponents(
         new ButtonBuilder()
           .setCustomId('story_restart')
@@ -79,11 +74,18 @@ module.exports = {
       );
     }
 
-    // Envoi ou mise à jour du message
+    // 🚀 envoie la réponse avec fichiers
+    const payload = {
+      embeds: [embed],
+      components: [row],
+      files: attachments,
+      ephemeral: true
+    };
+
     if (interaction.replied || interaction.deferred) {
-      await interaction.editReply({ embeds: [embed], components: [row] });
+      await interaction.editReply(payload);
     } else {
-      await interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+      await interaction.reply(payload);
     }
   }
 };
