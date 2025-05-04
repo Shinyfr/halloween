@@ -15,7 +15,7 @@ module.exports = {
     const inv = await db.get(`${uid}_inv`) || [];
 
     if (inv.length === 0) {
-      return interaction.reply({ content: '🛒 Ton inventaire est vide.', ephemeral: true });
+      return interaction.reply({ content: '🛒 Ton inventaire est vide.'});
     }
 
     // Compte combien de chaque item
@@ -35,6 +35,6 @@ module.exports = {
       embed.addFields({ name: name, value: `Quantité : ${qty}`, inline: true });
     }
 
-    await interaction.reply({ embeds: [embed], ephemeral: true });
+    await interaction.reply({ embeds: [embed] });
   }
 };
