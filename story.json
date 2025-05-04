@@ -4,7 +4,8 @@
     "options": [
       { "label": "Explorer la maison abandonnée", "next": "house" },
       { "label": "Pénétrer dans le cimetière",   "next": "cemetery" }
-    ]
+    ],
+    "image": "assets/story/start.png"
   },
 
   "house": {
@@ -12,7 +13,8 @@
     "options": [
       { "label": "Monter au grenier",    "next": "attic"   },
       { "label": "Descendre au sous-sol", "next": "basement" }
-    ]
+    ],
+    "image": "assets/story/house.png"
   },
   "attic": {
     "text": "Le grenier est empli de toiles d’araignées et d’objets brisés. Une vieille poupée, posée sur un coffre, paraît vous observer.",
@@ -39,6 +41,7 @@
   "coffer": {
     "text": "Le coffre craque. À l’intérieur, un vieux grimoire s’ouvre tout seul sur une page gravée de symboles rouges…\n\nUn éclair de lumière jaillit !",
     "options": [],
+    "image": "assets/story/coffer.png",
     "ending": "death"
   },
   "treasure": {
@@ -55,6 +58,7 @@
   "secret": {
     "text": "Le tunnel vous mène à une bibliothèque cachée. Vous y trouvez des récits oubliés d’Halloween…\n\nVotre aventure ne fait que commencer.",
     "options": [],
+    "image": "assets/story/secret.png",
     "ending": "success",
     "reward": 10
   },
