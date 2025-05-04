@@ -41,7 +41,7 @@ async function main() {
   client.once('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag} !`);
 
-    // Chaque jour à 9h (Europe/Paris), on notifie les joueurs dont un nouveau chapitre est dispo
+    // À 9h chaque jour en Europe/Paris, on notifie les joueurs
     cron.schedule('0 9 * * *', async () => {
       const keys = await db.keys();
       for (const key of keys.filter(k => k.endsWith('_storyState'))) {
@@ -68,15 +68,17 @@ async function main() {
   client.on('interactionCreate', async interaction => {
     // —— Boutons de l’aventure (/story)
     if (interaction.isButton() && interaction.customId.startsWith('story_')) {
-      const uid  = interaction.user.id;
-      const key  = `${uid}_storyState`;
+      const uid       = interaction.user.id;
+      const key       = `${uid}_storyState`;
       const storyData = require('./story.json');
 
+      // Recommencer
       if (interaction.customId === 'story_restart') {
         await db.set(key, { current: 'start', nextAvailableAt: 0 });
         return client.commands.get('story').execute(interaction);
       }
 
+      // Choix classique
       const [, current, idxStr] = interaction.customId.split('_');
       const idx    = parseInt(idxStr, 10);
       const option = storyData[current].options[idx];
@@ -88,8 +90,11 @@ async function main() {
       await db.set(key, { current: next, nextAvailableAt: nextAt });
 
       if (delay > 0) {
+        // Affiche en heure Europe/Paris
         const when = new Date(nextAt).toLocaleString('fr-FR', {
-          dateStyle: 'full', timeStyle: 'short'
+          dateStyle: 'full',
+          timeStyle: 'short',
+          timeZone: 'Europe/Paris'
         });
         return interaction.reply({
           content: `⏳ Ton choix est pris en compte !\nReviens le **${when}** pour la suite.`,
@@ -97,6 +102,7 @@ async function main() {
         });
       }
 
+      // Delay = 0 → on affiche immédiatement
       return client.commands.get('story').execute(interaction);
     }
 
