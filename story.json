@@ -2,8 +2,8 @@
   "start": {
     "text": "La nuit d’Halloween tombe sur Ravenwood. Les lanternes vacillent et un silence oppressant s'installe.\n\nVous êtes à l'orée du village. Que faites-vous ?",
     "options": [
-      { "label": "Explorer la maison abandonnée", "next": "house" },
-      { "label": "Pénétrer dans le cimetière",   "next": "cemetery" }
+      { "label": "Explorer la maison abandonnée", "next": "house",    "delayDays": 1 },
+      { "label": "Pénétrer dans le cimetière",   "next": "cemetery", "delayDays": 1 }
     ],
     "image": "assets/story/start.png"
   },
@@ -11,30 +11,32 @@
   "house": {
     "text": "La porte grinçante s’ouvre sur un hall poussiéreux. Deux chemins s’offrent à vous : un escalier en colimaçon vers le grenier ou un passage sombre vers le sous-sol.",
     "options": [
-      { "label": "Monter au grenier",    "next": "attic"   },
-      { "label": "Descendre au sous-sol", "next": "basement" }
+      { "label": "Monter au grenier",    "next": "attic",     "delayDays": 1 },
+      { "label": "Descendre au sous-sol", "next": "basement",  "delayDays": 1 }
     ],
     "image": "assets/story/house.png"
   },
+
   "attic": {
     "text": "Le grenier est empli de toiles d’araignées et d’objets brisés. Une vieille poupée, posée sur un coffre, paraît vous observer.",
     "options": [
-      { "label": "Parler à la poupée",           "next": "doll"   },
-      { "label": "Chercher un indice autour du coffre", "next": "coffer" }
+      { "label": "Parler à la poupée",           "next": "doll",    "delayDays": 1 },
+      { "label": "Chercher un indice autour du coffre", "next": "coffer",  "delayDays": 1 }
     ]
   },
+
   "basement": {
     "text": "Un escalier étroit vous mène dans un sous-sol glacial. Un coffre ancien trône au centre de la pièce, fermé par un cadenas rouillé.",
     "options": [
-      { "label": "Ouvrir le coffre poussiéreux", "next": "treasure" },
-      { "label": "Suivre un bruit étrange",      "next": "shadow"   }
+      { "label": "Ouvrir le coffre poussiéreux", "next": "treasure", "delayDays": 1 },
+      { "label": "Suivre un bruit étrange",      "next": "shadow",   "delayDays": 1 }
     ]
   },
 
   "doll": {
     "text": "La poupée s’anime ! Elle prononce d’une voix sifflante : « Suis-moi si tu veux vivre… »\n\nPuis elle s’écarte, un passage secret apparaît.",
     "options": [
-      { "label": "Suivre le passage", "next": "secret" }
+      { "label": "Suivre le passage", "next": "secret", "delayDays": 1 }
     ],
     "image": "assets/story/secret.png"
   },
@@ -42,78 +44,89 @@
   "coffer": {
     "text": "Le coffre craque. À l’intérieur, un vieux grimoire s’ouvre tout seul sur une page gravée de symboles rouges…\n\nUn éclair de lumière jaillit !",
     "options": [],
-    "image": "assets/story/coffer.png",
-    "ending": "death"
+    "ending": "death",
+    "image": "assets/story/coffer.png"
   },
+
   "treasure": {
     "text": "Vous soulevez le couvercle et découvrez un collier orné d’une citrouille en rubis. Vous sentez un pouvoir étrange vous envahir…",
     "options": [],
     "ending": "success",
     "reward": 5
   },
+
   "shadow": {
     "text": "Vous avancez vers le bruit et une ombre surgit derrière vous. Tout devient noir.",
     "options": [],
     "ending": "death"
   },
+
   "secret": {
     "text": "Le tunnel vous mène à une bibliothèque cachée. Vous y trouvez des récits oubliés d’Halloween…\n\nVotre aventure ne fait que commencer.",
     "options": [],
     "ending": "success",
-    "reward": 10
+    "reward": 10,
+    "image": "assets/story/secret.png"
   },
 
   "cemetery": {
     "text": "Le cimetière baigne dans une brume dense. Deux allées se présentent : l’une bordée de statues, l’autre éclairée par une lanterne vacillante.",
     "options": [
-      { "label": "Suivre la rangée de statues",   "next": "statues" },
-      { "label": "Marcher vers la lanterne",      "next": "lantern" }
+      { "label": "Suivre la rangée de statues", "next": "statues", "delayDays": 1 },
+      { "label": "Marcher vers la lanterne",    "next": "lantern","delayDays": 1 }
     ]
   },
+
   "statues": {
     "text": "Les statues vous entourent sans un bruit. Vous remarquez une dalle de pierre légèrement enfoncée.",
     "options": [
-      { "label": "Soulever la dalle",   "next": "crypt"    },
-      { "label": "Continuer tout droit","next": "path_end" }
+      { "label": "Soulever la dalle",   "next": "crypt",     "delayDays": 1 },
+      { "label": "Continuer tout droit","next": "path_end",  "delayDays": 1 }
     ]
   },
+
   "lantern": {
     "text": "La lanterne s’éteint soudain. Vous entendez un murmure près d’une tombe sculptée.",
     "options": [
-      { "label": "Lire l’épitaphe", "next": "inscription" },
-      { "label": "Toucher la tombe", "next": "curse"       }
+      { "label": "Lire l’épitaphe", "next": "inscription", "delayDays": 1 },
+      { "label": "Toucher la tombe", "next": "curse",       "delayDays": 1 }
     ]
   },
 
   "crypt": {
     "text": "Un escalier taillé dans la pierre descend vers un mausolée où reposent d’anciens seigneurs du village.",
     "options": [
-      { "label": "Réciter une incantation à voix basse", "next": "incantation" },
-      { "label": "Fouiller un sarcophage",              "next": "mummy"        }
+      { "label": "Réciter une incantation à voix basse","next": "incantation","delayDays": 1 },
+      { "label": "Fouiller un sarcophage",             "next": "mummy",      "delayDays": 1 }
     ]
   },
+
   "path_end": {
     "text": "Vous atteignez la sortie du cimetière. L’air frais vous saisit. Vous avez survécu… pour l’instant.",
     "options": [],
     "ending": "success",
     "reward": 3
   },
+
   "inscription": {
     "text": "« Celui qui dérange le repos des morts… »\n\nUne silhouette spectrale se dresse devant vous.",
     "options": [],
     "ending": "death"
   },
+
   "curse": {
     "text": "Un vent glacial vous traverse. Vous sentez vos forces vous quitter…",
     "options": [],
     "ending": "death"
   },
+
   "incantation": {
     "text": "Les hiéroglyphes s’illuminent. Un ancien roi s’éveille et vous accorde son savoir.",
     "options": [],
     "ending": "success",
     "reward": 8
   },
+
   "mummy": {
     "text": "La momie se redresse, ses bandelettes tombent. Elle vous offre un talisman protecteur.",
     "options": [],
