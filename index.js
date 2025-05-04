@@ -1,5 +1,7 @@
 // index.js
 require('dotenv').config();
+console.log('[DEBUG] STORY_TEST_MODE =', process.env.STORY_TEST_MODE);
+
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const fs    = require('fs');
