@@ -1,46 +1,34 @@
 {
   "start": {
-    "text": "La nuit d’Halloween tombe sur le village de Ravenwood. Les lanternes vacillent, et un frisson vous parcourt la colonne vertébrale.\n\nQue faites-vous ?",
+    "text": "La nuit d’Halloween tombe sur Ravenwood… Que faites-vous ?",
     "options": [
-      { "label": "Explorer la vieille maison", "next": "house" },
-      { "label": "Emprunter le sentier sombre", "next": "trail" }
+      { "label": "Visiter la vieille maison",   "next": "house",    "delayDays": 0 },
+      { "label": "Suivre le sentier sombre",    "next": "trail",    "delayDays": 0 }
     ]
   },
   "house": {
-    "text": "La porte grince lorsque vous la poussez. Un escalier en colimaçon descend vers les ténèbres.\n\nVotre cœur s’accélère.",
+    "text": "L’escalier craque sous tes pas…",
     "options": [
-      { "label": "Descendre l’escalier", "next": "basement" },
-      { "label": "Faire demi-tour",       "next": "start"    }
+      { "label": "Descendre au sous-sol",       "next": "basement", "delayDays": 1 },
+      { "label": "Faire demi-tour",             "next": "start",    "delayDays": 0 }
     ]
   },
   "trail": {
-    "text": "Le sentier est jonché de feuilles mortes. Vous entendez un murmure derrière vous.\n\nQuel est votre choix ?",
+    "text": "Le vent glacial te pousse en avant…",
     "options": [
-      { "label": "Courir vers la lumière",   "next": "village" },
-      { "label": "Regarder derrière vous",   "next": "shadow"  }
+      { "label": "Courir vers la lumière",      "next": "village",  "delayDays": 1 },
+      { "label": "Regarder derrière soi",       "next": "shadow",   "delayDays": 0 }
     ]
   },
   "basement": {
-    "text": "Dans le sous-sol, une silhouette encapuchonnée vous tourne le dos, susurrant d’antiques paroles. Le temps semble s’être arrêté.",
+    "text": "Une silhouette encapuchonnée se retourne…",
     "options": [
-      { "label": "Tenter de parler",    "next": "talk"   },
-      { "label": "Fuir à toutes jambes", "next": "escape" }
+      { "label": "Tenter de parler",            "next": "talk",     "delayDays": 2 },
+      { "label": "Fuir à toutes jambes",        "next": "escape",   "delayDays": 0 }
     ]
   },
-  "village": {
-    "text": "Vous atteignez le village, mais il est désert. Seule une citrouille creusée éclaire une place vide.",
-    "options": []
-  },
-  "shadow": {
-    "text": "Vous vous retournez : rien qu’une ombre qui disparaît dans les fourrés. Était-ce réel ?",
-    "options": []
-  },
-  "talk": {
-    "text": "Vous murmurez un salut : la silhouette se tourne, révélant un vieil ermite au regard bienveillant. Il vous offre un bonbon magique.",
-    "options": []
-  },
-  "escape": {
-    "text": "Vous foncez hors de la maison et ne vous arrêtez qu’au milieu du sentier. Vous êtes sain et sauf… pour l’instant.",
-    "options": []
-  }
+  "village":  { "text": "Le village est désert…",       "options": [] },
+  "shadow":   { "text": "Rien qu’une ombre…",            "options": [] },
+  "talk":     { "text": "Un ermite bienveillant t’offre un bonbon.", "options": [] },
+  "escape":   { "text": "Tu t’enfuis sain et sauf… pour l’instant.",   "options": [] }
 }

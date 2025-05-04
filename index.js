@@ -2,9 +2,10 @@
 require('dotenv').config();
 
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-const db = require('./db');
+const fs    = require('fs');
+const path  = require('path');
+const db    = require('./db');
+const cron  = require('node-cron');
 
 async function main() {
   // 1️⃣ Initialise le stockage
@@ -15,18 +16,16 @@ async function main() {
     intents: [
       GatewayIntentBits.Guilds,
       GatewayIntentBits.GuildMessages,
-      // GatewayIntentBits.MessageContent, // décommente si besoin de lire le contenu des messages
+      // GatewayIntentBits.MessageContent, // décommente si nécessaire
     ]
   });
 
-  // Expose la DB et prépare la collection de commandes
   client.db = db;
   client.commands = new Collection();
 
-  // 3️⃣ Chargement récursif des commandes depuis commands/ et sous-dossiers
+  // 3️⃣ Chargement récursif des commandes
   function loadCommandFiles(dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         loadCommandFiles(fullPath);
@@ -38,48 +37,84 @@ async function main() {
   }
   loadCommandFiles(path.join(__dirname, 'commands'));
 
-  // 4️⃣ Événement ready
+  // 4️⃣ Ready + notifications journalières
   client.once('ready', () => {
     console.log(`Connecté en tant que ${client.user.tag} !`);
+
+    // Chaque jour à 9h (Europe/Paris), on notifie les joueurs dont un nouveau chapitre est dispo
+    cron.schedule('0 9 * * *', async () => {
+      const keys = await db.keys();
+      for (const key of keys.filter(k => k.endsWith('_storyState'))) {
+        const uid   = key.split('_')[0];
+        const state = await db.get(key);
+        if (state.nextAvailableAt > 0 && Date.now() >= state.nextAvailableAt) {
+          try {
+            const user = await client.users.fetch(uid);
+            await user.send(
+              '📖 Ton nouveau chapitre Halloween est disponible !\n' +
+              'Tape `/story` pour continuer ton aventure.'
+            );
+            // Réinitialise pour ne pas renoter plusieurs fois
+            await db.set(key, { current: state.current, nextAvailableAt: 0 });
+          } catch (e) {
+            console.error(`❌ Erreur notification pour ${uid}:`, e);
+          }
+        }
+      }
+    }, { timezone: 'Europe/Paris' });
   });
 
-  // 5️⃣ Gestion des interactions (boutons + sélecteurs + slash-commands)
+  // 5️⃣ Gestion des interactions
   client.on('interactionCreate', async interaction => {
-    // ── Boutons de l’aventure (/story)
+    // —— Boutons de l’aventure (/story)
     if (interaction.isButton() && interaction.customId.startsWith('story_')) {
-      const uid = interaction.user.id;
-      let nextNode;
+      const uid  = interaction.user.id;
+      const key  = `${uid}_storyState`;
+      const storyData = require('./story.json');
+
       if (interaction.customId === 'story_restart') {
-        nextNode = 'start';
-      } else {
-        const [, current, idxStr] = interaction.customId.split('_');
-        const idx = parseInt(idxStr, 10);
-        const node = require('./story.json')[current];
-        nextNode = node.options[idx].next;
+        await db.set(key, { current: 'start', nextAvailableAt: 0 });
+        return client.commands.get('story').execute(interaction);
       }
-      await db.set(`${uid}_story`, nextNode);
-      // Réexécute la commande story pour afficher le nouveau nœud
-      const storyCmd = client.commands.get('story');
-      return storyCmd.execute(interaction);
+
+      const [, current, idxStr] = interaction.customId.split('_');
+      const idx    = parseInt(idxStr, 10);
+      const option = storyData[current].options[idx];
+      const next   = option.next;
+      const delay  = option.delayDays || 0;
+      const now    = Date.now();
+      const nextAt = now + delay * 24 * 3600 * 1000;
+
+      await db.set(key, { current: next, nextAvailableAt: nextAt });
+
+      if (delay > 0) {
+        const when = new Date(nextAt).toLocaleString('fr-FR', {
+          dateStyle: 'full', timeStyle: 'short'
+        });
+        return interaction.reply({
+          content: `⏳ Ton choix est pris en compte !\nReviens le **${when}** pour la suite.`,
+          ephemeral: true
+        });
+      }
+
+      return client.commands.get('story').execute(interaction);
     }
 
-    // ── Menu déroulant de la boutique (/shop)
+    // —— Menu déroulant (/shop)
     if (interaction.isStringSelectMenu() && interaction.customId === 'shop_select') {
       const choice = interaction.values[0];
-      // Simule l’option pour la commande /buy
       interaction.options = { getString: () => choice };
-      const buyCmd = client.commands.get('buy');
-      return buyCmd.execute(interaction);
+      return client.commands.get('buy').execute(interaction);
     }
 
-    // ── Slash-commands
+    // —— Slash-commands
     if (!interaction.isCommand()) return;
     console.log(`>> Reçu interaction : ${interaction.commandName}`);
-    const cmd = client.commands.get(interaction.commandName);
-    if (!cmd) return;
+    const command = client.commands.get(interaction.commandName);
+    if (!command) return;
 
     try {
-      await cmd.execute(interaction);
+      await command.execute(interaction);
     } catch (err) {
       console.error(err);
       const payload = { content: '❌ Une erreur est survenue.', ephemeral: true };
@@ -91,11 +126,11 @@ async function main() {
     }
   });
 
-  // 6️⃣ Connexion du bot
+  // 6️⃣ Connexion
   await client.login(process.env.DISCORD_TOKEN);
 }
 
 main().catch(err => {
-  console.error('Erreur au démarrage :', err);
+  console.error('❌ Erreur au démarrage :', err);
   process.exit(1);
 });
